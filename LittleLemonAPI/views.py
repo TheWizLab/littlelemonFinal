@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
-from rest_framework import status, generics
+from rest_framework import status, generics, viewsets
 from django.shortcuts import get_object_or_404
 from . import serializers
 from .permissions import IsManager
@@ -20,8 +20,19 @@ from . import serializers, models
 
 @throttle_classes([AnonRateThrottle, UserRateThrottle])
 class CategoriesView(generics.ListCreateAPIView):
+    def get_permissions(self):
+        self.permission_classes = []
+        if self.request.method != 'GET':
+            self.permission_classes = [IsAuthenticated]
+        return [permission() for permission in self.permission_classes]
+    # def get_queryset(self):
+    #     managergroup = self.request.user.groups.filter(name='Manager').exists()
+    #     if managergroup:
+    #         ;
+
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
+
 
 class CategorySingleView(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Category.objects.all()
