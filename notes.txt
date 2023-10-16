@@ -1,0 +1,11 @@
+admin user:
+Admin
+Admin
+
+Manager user:
+Manager
+manager@lemon.com
+
+user:
+john
+johnny123**

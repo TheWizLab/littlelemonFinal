@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import Cart, Category, MenuItem, Order, OrderItem
+from . import models
 
 # Register your models here.
-admin.site.register(Cart)
-admin.site.register(Category)
-admin.site.register(MenuItem)
-admin.site.register(Order)
-admin.site.register(OrderItem)
+admin.site.register(models.Cart)
+admin.site.register(models.Category)
+admin.site.register(models.MenuItem)
+admin.site.register(models.Order)
+admin.site.register(models.OrderItem)

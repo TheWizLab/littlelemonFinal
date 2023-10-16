@@ -23,22 +23,44 @@ class CategoriesView(generics.ListCreateAPIView):
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
 
+class CategorySingleView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Category.objects.all()
+    serializer_class = serializers.CategorySerializer
+
 
 class MenuItemsView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     queryset = models.MenuItem.objects.all()
     serializer_class = serializers.MenuItemSerializer
-    ordering_fields = ['price', 'inventory']
-    filterset_fields = ['price', 'inventory']
-    search_fields = ['title']
+    ordering_fields = ['title', 'price', 'featured']
+    filterset_fields = ['title', 'price', 'featured']
+    search_fields = ['category__icontains']
 
 
 class MenuItemsSingleView(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.MenuItem.objects.all()
     serializer_class = serializers.MenuItemSerializer
 
+class ManagerListView(generics.ListCreateAPIView):
+    queryset = models.User.objects.all()
+    serializer_class = serializers.UserSerializer
 
-class CategorySingleView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Category.objects.all()
-    serializer_class = serializers.CategorySerializer
 
+class CartMenu(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.CartSerializer
+
+
+class OrderListView(generics.ListCreateAPIView):
+    queryset = models.Order.objects.all()
+    serializer_class = serializers.OrderSerializer
+
+
+class GroupListCreate(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.User.objects.all()
+    serializer_class = serializers.GroupSerializer
+
+
+class GroupSingle(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.User.objects.all()
+    serializer_class = serializers.GroupSerializer

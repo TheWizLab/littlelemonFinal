@@ -147,3 +147,7 @@ REST_FRAMEWORK = {
         'rest_framework_xml.renderers.XMLRenderer',
     ]
 }
+
+DJOSER = {
+    "USER_ID_FIELD": "username"
+}
