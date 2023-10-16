@@ -18,7 +18,6 @@ from decimal import Decimal
 from . import serializers, models
 
 
-@api_view()
 @throttle_classes([AnonRateThrottle, UserRateThrottle])
 class CategoriesView(generics.ListCreateAPIView):
     queryset = models.Category.objects.all()
@@ -37,3 +36,9 @@ class MenuItemsView(generics.ListCreateAPIView):
 class MenuItemsSingleView(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.MenuItem.objects.all()
     serializer_class = serializers.MenuItemSerializer
+
+
+class CategorySingleView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Category.objects.all()
+    serializer_class = serializers.CategorySerializer
+
