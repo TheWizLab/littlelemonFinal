@@ -89,9 +89,9 @@ class ManagerSingleUserView(generics.RetrieveDestroyAPIView):
 
     def get_queryset(self):
         # Get the 'Manager' group
-        manager_group = Group.objects.get(name='Manager')
+        managers = Group.objects.get(name='Manager')
         # Get the users in the 'Manager' group
-        queryset = User.objects.filter(groups=manager_group)
+        queryset = User.objects.filter(groups=managers)
         return queryset
 
 
