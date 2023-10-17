@@ -1,20 +1,21 @@
 from rest_framework import serializers
 from .models import Category, MenuItem, Cart, Order, OrderItem
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
+from datetime import datetime
 
-
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Group
-        fields = ['name']
 
 
 class UserSerializer(serializers.ModelSerializer):
-    groups = GroupSerializer(read_only=True, many=True)
+    Date_Joined = serializers.SerializerMethodField()
+    date_joined = serializers.DateTimeField(write_only=True, default=datetime.now)
+    email = serializers.EmailField(required=False)
 
     class Meta:
         model = User
-        fields = ['username', 'id', 'email', 'groups']
+        fields = ['id', 'username', 'email', 'date_joined', 'Date_Joined']
+
+    def get_Date_Joined(self, obj):
+        return obj.date_joined.strftime('%Y-%m-%d')
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -25,26 +26,69 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class MenuItemSerializer(serializers.ModelSerializer):
     #category_id = serializers.IntegerField(write_only=True)
-    category = CategorySerializer(read_only=True)
-
+    #category = CategorySerializer(read_only=True)
     class Meta:
         model = MenuItem
         fields = ['id', 'title', 'price', 'category']
+        depth = 1
+
+
+class CartHelpSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = MenuItem
+        fields = ['id', 'title', 'price']
 
 
 class CartSerializer(serializers.ModelSerializer):
-    menuitem = MenuItemSerializer(read_only=True)
-    menuitem_id = serializers.IntegerField(write_only=True)
-    user = UserSerializer(read_only=True)
-    user_id = serializers.IntegerField(write_only=True)
+    menuitem = CartHelpSerializer()
+
+    class Meta():
+        model = Cart
+        fields = ['menuitem', 'quantity', 'price']
+
+
+class AddToCartSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = Cart
+        fields = ['menuitem', 'quantity']
+
+
+class RemoveFromCartSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = Cart
+        fields = ['menuitem']
+
+class OrdersSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta():
+        model = Order
+        fields = ['id','user','total','status','delivery_crew','date']
+
+class SingleHelperSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = MenuItem
+        fields = ['title','price']
+
+class SingleOrderSerializer(serializers.ModelSerializer):
+    menuitem = SingleHelperSerializer()
+    class Meta():
+        model = OrderItem
+        fields = ['menuitem','quantity']
+    unit_price = serializers.DecimalField(max_digits=6, decimal_places=2, source='menuitem.price', read_only=True)
+    price = serializers.DecimalField(max_digits=6, decimal_places=2, read_only=True)
+    name = serializers.CharField(source='menuitem.title', read_only=True)
 
     class Meta:
-        model = Cart
-        fields = ['user', 'user_id', 'menuitem', 'menuitem_id', 'quantity', 'unit_price', 'price']
+        model = OrderItem
+        fields = ['name', 'quantity', 'unit_price', 'price']
+        extra_kwargs = {
+            'menuitem': {'read_only': True}
+        }
 
-    def totalprice(self, model: Cart):
-        return model.price * model.quantity
-
+class OrderPutSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = Order
+        fields = ['delivery_crew']
 
 class OrderItemSerializer(serializers.ModelSerializer):
     # order = UserSerializer(read_only=True)

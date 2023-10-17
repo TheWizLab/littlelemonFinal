@@ -2,13 +2,14 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('category', views.CategoriesView.as_view(), name="category"),
-    path('category/<int:pk>', views.CategorySingleView.as_view(), name="categories"),
-    path('menu', views.MenuItemsView.as_view(), name="menu_items"),
-    path('menu-items/<int:pk>', views.MenuItemsSingleView.as_view(), name="single_menu_item"),
-    path('groups/manager/users', views.ManagerListView.as_view(), name="managers"),
-    path('cart/menu-items', views.CartMenu.as_view(), name="cart-menu"),
-    path('order', views.OrderListView.as_view(), name= "order"),
-    path('groups', views.GroupListCreate.as_view(), name='groups'),
-    path('groups/<int:pk>', views.GroupSingle.as_view(), name='groups')
+    path('menu-items', views.MenuItemView.as_view()),
+    path('menu-items/category', views.CategoryView.as_view()),
+    path('menu-items/<int:pk>', views.SingleItemView.as_view()),
+    path('groups/manager/users/', views.ManagerUsersView.as_view()),
+    path('groups/manager/users/<int:pk>/', views.ManagerSingleUserView.as_view()),
+    path('groups/delivery-crew/users/', views.DeliveryCrewManagement.as_view()),
+    path('groups/delivery-crew/users/<int:pk>/', views.Delivery_crew_management_single_view.as_view()),
+    path('cart/menu-items/', views.Customer_Cart.as_view()),
+    path('orders/', views.OrdersView.as_view()),
+    path('orders/<int:pk>/', views.SingleOrderView.as_view()),
 ]
