@@ -22,9 +22,10 @@ class MenuItemView(generics.ListAPIView, generics.ListCreateAPIView):
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def get_permissions(self):
+        permission_classes = [IsAuthenticated]
         if self.request.method == 'POST':
-            return [IsAdminUser()]
-        return [AllowAny()]
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
 
 class SingleItemView(generics.RetrieveUpdateDestroyAPIView, generics.RetrieveAPIView):

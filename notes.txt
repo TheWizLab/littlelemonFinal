@@ -9,3 +9,7 @@ manager@lemon.com
 user:
 john
 johnny123**
+
+
+login using:
+http://127.0.0.1:8000/auth/token/login
