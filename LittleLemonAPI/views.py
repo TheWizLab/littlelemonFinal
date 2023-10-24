@@ -25,8 +25,11 @@ class MenuItemView(generics.ListAPIView, generics.ListCreateAPIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             permission_classes = [AllowAny]
+        elif self.request.method == 'POST':
+            permission_classes = [IsManager]
         else:
-            permission_classes = [IsAuthenticated, IsManager | IsAdminUser]
+            #permission_classes = [IsAuthenticated, IsManager | IsAdminUser]
+            permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
 
@@ -40,9 +43,9 @@ class SingleItemView(generics.RetrieveUpdateDestroyAPIView, generics.RetrieveAPI
         if self.request.method == 'PATCH':
             permission_classes = [IsAuthenticated, IsManager | IsAdminUser]
         if self.request.method == "DELETE":
-            permission_classes = [IsAdminUser]
+            permission_classes = [IsAdminUser | IsManager]
         if self.request.method == "PUT":
-            permission_classes = [IsAdminUser]
+            permission_classes = [IsAdminUser | IsManager]
         if self.request.method == "POST":
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
@@ -71,7 +74,7 @@ class ManagerUsersView(generics.ListCreateAPIView):
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
     queryset = User.objects.filter(groups__name='Managers')
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, IsManager | IsAdminUser]
+    permission_classes = [IsManager | IsAdminUser]
 
     def get_queryset(self):
         # Get Managers
