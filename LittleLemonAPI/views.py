@@ -7,6 +7,7 @@ from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from .permissions import IsManager, IsDeliveryCrew
 from django.contrib.auth.models import User, Group
 from .serializers import *
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
@@ -22,9 +23,10 @@ class MenuItemView(generics.ListAPIView, generics.ListCreateAPIView):
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def get_permissions(self):
-        permission_classes = [IsAuthenticated]
-        if self.request.method == 'POST':
-            permission_classes = [IsAuthenticated]
+        if self.request.method == 'GET':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated, IsManager | IsAdminUser]
         return [permission() for permission in permission_classes]
 
 
@@ -38,7 +40,11 @@ class SingleItemView(generics.RetrieveUpdateDestroyAPIView, generics.RetrieveAPI
         if self.request.method == 'PATCH':
             permission_classes = [IsAuthenticated, IsManager | IsAdminUser]
         if self.request.method == "DELETE":
-            permission_classes = [IsAuthenticated, IsAdminUser]
+            permission_classes = [IsAdminUser]
+        if self.request.method == "PUT":
+            permission_classes = [IsAdminUser]
+        if self.request.method == "POST":
+            permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
     def patch(self, request, *args, **kwargs):
