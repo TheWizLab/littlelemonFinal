@@ -184,7 +184,7 @@ class OrdersView(generics.ListCreateAPIView):
     def get_queryset(self, *args, **kwargs):
         if self.request.user.groups.filter(name='Manager').exists() or self.request.user.is_superuser == True:
             query = Order.objects.all()
-        elif self.request.user.groups.filter(name='Delivery Crew').exists():
+        elif self.request.user.groups.filter(name='Delivery_crew').exists():
             query = Order.objects.filter(delivery_crew=self.request.user)
         else:
             query = Order.objects.filter(user=self.request.user)
@@ -203,7 +203,7 @@ class OrdersView(generics.ListCreateAPIView):
         order = Order.objects.create(user=request.user, status=False, total=total, date=date.today())
         for i in cart_items.values():
             menuitem = get_object_or_404(MenuItem, id=i['menuitem_id'])
-            orderitem = OrderItem.objects.create(order=order, menuitem=menuitem, quantity=i['quantity'])
+            orderitem = OrderItem.objects.create(order=order, menuitem=menuitem, quantity=i['quantity'], unit_price=i['price'])
             orderitem.save()
         cart_items.delete()
         return JsonResponse(status=201, data={
