@@ -95,41 +95,52 @@ class ManagerUsersView(generics.ListCreateAPIView):
 
 class ManagerSingleUserView(generics.RetrieveDestroyAPIView):
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsManager | IsAdminUser]
 
     def get_queryset(self):
         # Get the 'Manager' group
         managers = Group.objects.get(name='Manager')
         # Get the users in the 'Manager' group
         queryset = User.objects.filter(groups=managers)
+        print('test')
         return queryset
 
+    def delete(self, request, pk):
+            user = get_object_or_404(User, pk=pk)
+            manager = Group.objects.get(name='Manager')
+            manager.user_set.remove(user)
+            return JsonResponse(status=201, data={'message': 'Succes'})
 
 class DeliveryCrewManagement(generics.ListCreateAPIView):
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, IsManager | IsAdminUser]
-    queryset = User.objects.filter(groups__name='Managers')
+    queryset = User.objects.filter(groups__name='Delivery_crew')
 
     def post(self, request, *args, **kwargs):
         # Assign user to delivery crew
         username = request.data['username']
         if username:
             user = get_object_or_404(User, username=username)
-            delivery_crew = Group.objects.get(name='Delivery Crew')
+            delivery_crew = Group.objects.get(name='Delivery_crew')
             delivery_crew.user_set.add(user)
             return JsonResponse(status=201, data={'message': 'User added to Delivery Crew'})
 
 
 class Delivery_crew_management_single_view(generics.RetrieveDestroyAPIView):
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser, IsManager]
+    permission_classes = [IsAdminUser | IsManager]
 
     def get_queryset(self):
-        delivery_crew = Group.objects.get(name='Delivery Crew')
+        delivery_crew = Group.objects.get(name='Delivery_crew')
         queryset = User.objects.filter(groups=delivery_crew)
         return queryset
 
+    def delete(self, request, pk):
+            user = get_object_or_404(User, pk=pk)
+            delcrew = Group.objects.get(name='Delivery_crew')
+            delcrew.user_set.remove(user)
+            return JsonResponse(status=201, data={'message': 'Succes'})
 
 class Customer_Cart(generics.ListCreateAPIView):
     serializer_class = CartSerializer
@@ -154,14 +165,14 @@ class Customer_Cart(generics.ListCreateAPIView):
         return JsonResponse(status=201, data={'message': 'Item added to cart!'})
 
     def delete(self, request, *arg, **kwargs):
-        if request.data['menuitem']:
-            serialized_item = RemoveFromCartSerializer(data=request.data)
-            serialized_item.is_valid(raise_exception=True)
-            menuitem = request.data['menuitem']
-            cart = get_object_or_404(Cart, user=request.user, menuitem=menuitem)
-            cart.delete()
-            return JsonResponse(status=200, data={'message': 'Item removed from cart'})
-        else:
+        # if request.data['menuitem']:
+        #     serialized_item = RemoveFromCartSerializer(data=request.data)
+        #     serialized_item.is_valid(raise_exception=True)
+        #     menuitem = request.data['menuitem']
+        #     cart = get_object_or_404(Cart, user=request.user, menuitem=menuitem)
+        #     cart.delete()
+        #     return JsonResponse(status=200, data={'message': 'Item removed from cart'})
+        # else:
             Cart.objects.filter(user=request.user).delete()
             return JsonResponse(status=201, data={'message': 'All Items removed from cart'})
 
