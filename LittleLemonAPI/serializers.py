@@ -80,7 +80,7 @@ class SingleOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['name', 'quantity', 'unit_price', 'price']
+        fields = ['name', 'quantity', 'unit_price', 'price', 'menuitem']
         extra_kwargs = {
             'menuitem': {'read_only': True}
         }

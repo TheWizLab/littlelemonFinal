@@ -45,11 +45,14 @@ class Order(models.Model):
     def __str__(self) -> str:
         return self.title + ' ' + str(self.id) + ' ' + str(self.date)
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    #order = models.ForeignKey(Order, on_delete=models.CASCADE)
     menuitem = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     quantity = models.SmallIntegerField()
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    #price = models.DecimalField(max_digits=6, decimal_places=2)
+    order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
+    # class Meta:
+    #     unique_together = ('order', 'menuitem')
 
-    class Meta:
-        unique_together = ('order', 'menuitem')
+
+

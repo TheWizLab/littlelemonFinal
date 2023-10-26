@@ -200,15 +200,18 @@ class OrdersView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         cart_items = Cart.objects.filter(user=request.user)
         total = self.calculate_total(cart_items)
-        order = Order.objects.create(user=request.user, status=False, total=total, date=date.today())
-        for i in cart_items.values():
-            menuitem = get_object_or_404(MenuItem, id=i['menuitem_id'])
-            orderitem = OrderItem.objects.create(order=order, menuitem=menuitem, quantity=i['quantity'], unit_price=i['price'])
-            orderitem.save()
-        cart_items.delete()
-        return JsonResponse(status=201, data={
-            'message': 'Your order has been placed! Your order number is {}'.format(str(order.id))})
-
+        if total > 0:
+            order = Order.objects.create(user=request.user, status=False, total=total, date=date.today())
+            for i in cart_items.values():
+                #menuitem = get_object_or_404(MenuItem, id=i['menuitem_id'])
+                orderitem = OrderItem.objects.create(menuitem_id=i['menuitem_id'], quantity=i['quantity'], unit_price=i['price'], order_id_id=order.id)
+                orderitem.save()
+            cart_items.delete()
+            return JsonResponse(status=201, data={
+                'message': 'Your order has been placed! Your order number is {}'.format(str(order.id))})
+        else:
+            return JsonResponse(status=409, data={
+                'message': 'Your cart was empty! No order number is made'})
     def calculate_total(self, cart_items):
         total = Decimal(0)
         for item in cart_items:
@@ -224,8 +227,12 @@ class SingleOrderView(generics.ListCreateAPIView):
         order = Order.objects.get(pk=self.kwargs['pk'])
         if self.request.user == order.user and self.request.method == 'GET':
             permission_classes = [IsAuthenticated]
-        elif self.request.method == 'PUT' or self.request.method == 'DELETE':
-            permission_classes = [IsAuthenticated, IsManager | IsAdminUser]
+        elif self.request.method == 'PUT':
+            permission_classes = [IsAuthenticated]
+        elif self.request.method == 'DELETE':
+            permission_classes = [IsManager | IsAdminUser]
+        elif self.request.method == 'PATCH':
+            permission_classes = [IsAuthenticated]
         else:
             permission_classes = [IsAuthenticated, IsDeliveryCrew | IsManager | IsAdminUser]
         return [permission() for permission in permission_classes]
