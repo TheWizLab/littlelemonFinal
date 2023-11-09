@@ -29,7 +29,7 @@ class MenuItemSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     class Meta:
         model = MenuItem
-        fields = ['id', 'title', 'price', 'featured', 'category', 'category_id']
+        fields = ['id', 'title', 'price', 'featured', 'category', 'inventory', 'category_id']
         depth = 1
 
 
