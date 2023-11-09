@@ -13,7 +13,11 @@ from .serializers import *
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from .permissions import IsManager, IsDeliveryCrew
 
-
+@api_view()
+@permission_classes([IsAuthenticated])
+# @authentication_classes([TokenAuthentication])
+def msg(request):
+    return Response({"message":"This view is protected"})
 # Create your views here.
 class MenuItemView(generics.ListAPIView, generics.ListCreateAPIView):
     queryset = MenuItem.objects.all()
