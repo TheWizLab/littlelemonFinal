@@ -1,13 +1,14 @@
 #TestCase class
 from django.test import TestCase
-from LittleLemonAPI.models import MenuItem
+from LittleLemonAPI.models import MenuItem, Category
 
 
 class MenuItemTest(TestCase):
     def setUp(self):
         print("setUp: Run once for every test method to setup clean data.")
+        cat = Category.objects.create(title='random', slug='random')
         pass
 
     def test_get_item(self):
-        item = MenuItem.objects.create(title="IceCream", price=80, inventory=10, featured=False)
-        self.assertEqual(item, "IceCream : 80")
+        item = MenuItem.objects.create(title="IceCream", price=80, inventory=10, featured=False, category_id=1)
+        self.assertEqual(item.price, 80)
