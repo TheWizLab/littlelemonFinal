@@ -17,6 +17,7 @@ class MenuItem(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2, db_index=True)
     featured = models.BooleanField(db_index=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    menu_item_description = models.TextField(max_length=1000, default='')
     inventory = models.SmallIntegerField()
 
     def __str__(self):
@@ -55,5 +56,11 @@ class OrderItem(models.Model):
     # class Meta:
     #     unique_together = ('order', 'menuitem')
 
+class Booking(models.Model):
+    first_name = models.CharField(max_length=200)
+    reservation_date = models.DateField()
+    reservation_slot = models.SmallIntegerField(default=10)
 
+    def __str__(self):
+        return self.first_name + ' ' + str(self.reservation_date) + ' ' + str(self.reservation_slot)
 

@@ -30,7 +30,7 @@ class MenuItemView(generics.ListAPIView, generics.ListCreateAPIView):
         if self.request.method == 'GET':
             permission_classes = [AllowAny]
         elif self.request.method == 'POST':
-            permission_classes = [IsManager]
+            permission_classes = [IsAdminUser | IsManager]
         else:
             #permission_classes = [IsAuthenticated, IsManager | IsAdminUser]
             permission_classes = [IsAdminUser]
@@ -43,15 +43,15 @@ class SingleItemView(generics.RetrieveUpdateDestroyAPIView, generics.RetrieveAPI
     throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def get_permissions(self):
-        permission_classes = [IsAuthenticated]
+        permission_classes = [AllowAny]
         if self.request.method == 'PATCH':
             permission_classes = [IsAuthenticated, IsManager | IsAdminUser]
         if self.request.method == "DELETE":
-            permission_classes = [IsAdminUser | IsManager]
+            permission_classes = [IsAuthenticated, IsAdminUser | IsManager]
         if self.request.method == "PUT":
             permission_classes = [IsAdminUser | IsManager]
         if self.request.method == "POST":
-            permission_classes = [IsAdminUser]
+            permission_classes = [IsAuthenticated, IsAdminUser]
         return [permission() for permission in permission_classes]
 
     def patch(self, request, *args, **kwargs):
